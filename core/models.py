@@ -122,7 +122,7 @@ class Article(models.Model):
     )
 
     hits = models.PositiveSmallIntegerField(
-        verbose_name=_('Hitst'),
+        verbose_name=_('Hits'),
         default=0
     )
 
@@ -157,4 +157,54 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Comment(models.Model):
+
+    article = models.ForeignKey(
+        'Article',
+        related_name='comments'
+    )
+
+    author = models.ForeignKey(
+        'User',
+        related_name='comments'
+    )
+
+    context = models.TextField(
+        verbose_name=_('Context'),
+        max_length = getattr(settings, 'COMMENT_CONTEXT_MAX_LENGTH', None)
+    )
+
+    state_choices = (
+        ('shown', 'Shown'),
+        ('deleted', 'Deleted'),
+    )
+
+    state = models.CharField(
+        verbose_name=_('State'),
+        max_length=10,
+        choices=state_choices,
+        default='shown'
+    )
+
+    created_at = models.DateTimeField(
+        verbose_name=_('Created datetime'),
+        auto_now_add=True,
+        editable=False
+    )
+
+    updated_at = models.DateTimeField(
+        verbose_name=_('Updated datetime'),
+        auto_now=True,
+    )
+
+    class Meta:
+        verbose_name = _('Comment')
+        verbose_name_plural = _('Comments')
+        ordering = ['-id']
     
+    def __str__(self):
+        return self.id
+
+
